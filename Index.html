@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Tap Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: sans-serif; touch-action: manipulation; }
+        #gameCanvas { display: block; background: #222; }
+        #ui { position: absolute; top: 10px; left: 10px; color: white; font-size: 20px; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="ui">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+
+        let score = 0;
+        let target = { x: 0, y: 0, radius: 40 };
+
+        // Resize canvas to fit screen
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            moveTarget();
+        }
+
+        function moveTarget() {
+            target.x = Math.random() * (canvas.width - target.radius * 2) + target.radius;
+            target.y = Math.random() * (canvas.height - target.radius * 2) + target.radius;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Target
+            ctx.beginPath();
+            ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "#ff4757";
+            ctx.fill();
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.closePath();
+            
+            requestAnimationFrame(draw);
+        }
+
+        // Handle Taps
+        canvas.addEventListener('touchstart', function(e) {
+            const touch = e.touches[0];
+            const dx = touch.clientX - target.x;
+            const dy = touch.clientY - target.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < target.radius) {
+                score++;
+                scoreElement.innerText = score;
+                moveTarget();
+            }
+        });
+
+        window.addEventListener('resize', resize);
+        resize();
+        draw();
+    </script>
+</body>
+</html>
